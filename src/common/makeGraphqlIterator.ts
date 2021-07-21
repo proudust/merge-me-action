@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable prefer-destructuring */
 
+import { info } from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { GraphQlQueryResponseData } from '@octokit/graphql';
 
@@ -28,6 +29,7 @@ export const makeGraphqlIterator = async function* <IterableData>(
   },
 ): AsyncGenerator<IterableData> {
   const { query, parameters, extractListFunction } = options;
+  info(JSON.stringify(parameters));
 
   let cursor: string | undefined = undefined;
   let hasNextPage: boolean = true;
@@ -41,12 +43,14 @@ export const makeGraphqlIterator = async function* <IterableData>(
       pageSize,
     });
 
+    info(JSON.stringify(response));
     const list = extractListFunction(response);
 
     if (list === undefined) {
       return;
     }
 
+    info(JSON.stringify(list));
     cursor = list.pageInfo.endCursor;
     hasNextPage = list.pageInfo.hasNextPage;
 
